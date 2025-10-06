@@ -128,3 +128,33 @@ export const commentUpdateInput = commentSchema
     message: "At least one field to update is required",
   })
   .describe("Payload to update a comment");
+
+// Path params
+export const IdParams = z.object({
+  id: z.coerce.number().int().positive().describe("Resource ID"),
+});
+
+// Response schemas (array wrappers)
+export const SeriesListResponse = z
+  .array(seriesSchema)
+  .describe("List of series");
+export const SeriesResponse = seriesSchema.describe("Single series resource");
+
+export const SeasonListResponse = z
+  .array(seasonSchema)
+  .describe("List of seasons");
+export const SeasonResponse = seasonSchema.describe("Single season resource");
+
+export const EpisodeListResponse = z
+  .array(episodeSchema)
+  .describe("List of episodes");
+export const EpisodeResponse = episodeSchema.describe(
+  "Single episode resource"
+);
+
+export const CommentListResponse = z
+  .array(commentSchema)
+  .describe("List of comments");
+export const CommentResponse = commentSchema.describe(
+  "Single comment resource"
+);

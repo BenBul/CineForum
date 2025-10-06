@@ -1,0 +1,10 @@
+{
+  "devDependencies": {
+    "next-openapi-gen": "^0.7.9"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.74.0",
+    "swagger-ui": "^5.29.3",
+    "swagger-ui-react": "^5.29.3"
+  }
+}

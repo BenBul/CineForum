@@ -1,0 +1,1447 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API Documentation",
+    "version": "1.0.0",
+    "description": "This is the OpenAPI specification for your project."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api",
+      "description": "Local development server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "IdParams": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": true,
+            "description": "Resource ID"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "CommentResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/idInt"
+              }
+            ],
+            "description": "Comment numeric identifier (PK)"
+          },
+          "created_at": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/timestamp"
+              }
+            ],
+            "description": "Row creation time in UTC (ISO 8601)"
+          },
+          "fk_series": {
+            "type": "object",
+            "nullable": true,
+            "description": "Optional FK to series.id"
+          },
+          "fk_season": {
+            "type": "object",
+            "nullable": true,
+            "description": "Optional FK to seasons.id"
+          },
+          "fk_episode": {
+            "type": "object",
+            "nullable": true,
+            "description": "Optional FK to episodes.id"
+          },
+          "fk_user": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/uuid"
+              }
+            ],
+            "description": "FK to user.id (auth.users.id)"
+          },
+          "text": {
+            "type": "string",
+            "nullable": true,
+            "description": "Optional comment text body"
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "fk_user"
+        ],
+        "description": "Comments table referencing optional series/season/episode and author user"
+      },
+      "CommentListResponse": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/commentSchema"
+        },
+        "description": "List of comments"
+      },
+      "commentCreateInput": {
+        "type": "object",
+        "properties": {
+          "fk_series": {
+            "type": "object",
+            "nullable": true,
+            "description": "Optional FK to series.id"
+          },
+          "fk_season": {
+            "type": "object",
+            "nullable": true,
+            "description": "Optional FK to seasons.id"
+          },
+          "fk_episode": {
+            "type": "object",
+            "nullable": true,
+            "description": "Optional FK to episodes.id"
+          },
+          "fk_user": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/uuid"
+              }
+            ],
+            "description": "FK to user.id (auth.users.id)"
+          },
+          "text": {
+            "type": "string",
+            "nullable": true,
+            "description": "Optional comment text body"
+          }
+        },
+        "required": [
+          "fk_user"
+        ],
+        "description": "Comments table referencing optional series/season/episode and author user"
+      },
+      "EpisodeResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/idInt"
+              }
+            ],
+            "description": "Episode numeric identifier (PK)"
+          },
+          "created_at": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/timestamp"
+              }
+            ],
+            "description": "Row creation time in UTC (ISO 8601)"
+          },
+          "fk_season": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/idInt"
+              }
+            ],
+            "description": "Foreign key to seasons.id"
+          },
+          "name": {
+            "type": "string",
+            "description": "Episode name/title"
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "fk_season",
+          "name"
+        ],
+        "description": "Episodes table belonging to a specific season"
+      },
+      "EpisodeListResponse": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/episodeSchema"
+        },
+        "description": "List of episodes"
+      },
+      "episodeCreateInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Episode name/title"
+          },
+          "fk_season": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/idInt"
+              }
+            ],
+            "description": "Foreign key to seasons.id"
+          }
+        },
+        "required": [
+          "fk_season",
+          "name"
+        ],
+        "description": "Episodes table belonging to a specific season"
+      },
+      "SeasonResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/idInt"
+              }
+            ],
+            "description": "Season numeric identifier (PK)"
+          },
+          "created_at": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/timestamp"
+              }
+            ],
+            "description": "Row creation time in UTC (ISO 8601)"
+          },
+          "fk_series": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/idInt"
+              }
+            ],
+            "description": "Foreign key to series.id"
+          },
+          "name": {
+            "type": "string",
+            "description": "Season name/number label"
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "fk_series",
+          "name"
+        ],
+        "description": "Seasons table belonging to a series"
+      },
+      "SeasonListResponse": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/seasonSchema"
+        },
+        "description": "List of seasons"
+      },
+      "seasonCreateInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Season name/number label"
+          },
+          "fk_series": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/idInt"
+              }
+            ],
+            "description": "Foreign key to series.id"
+          }
+        },
+        "required": [
+          "fk_series",
+          "name"
+        ],
+        "description": "Seasons table belonging to a series"
+      },
+      "SeriesResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/idInt"
+              }
+            ],
+            "description": "Series numeric identifier (PK)"
+          },
+          "created_at": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/timestamp"
+              }
+            ],
+            "description": "Row creation time in UTC (ISO 8601)"
+          },
+          "name": {
+            "type": "string",
+            "description": "Series title/name"
+          },
+          "image_url": {
+            "type": "string",
+            "description": "Public URL of the series image (nullable)"
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "name",
+          "image_url"
+        ],
+        "description": "Series table with name and optional image URL"
+      },
+      "SeriesListResponse": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/seriesSchema"
+        },
+        "description": "List of series"
+      },
+      "seriesCreateInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Series title/name",
+            "nullable": true
+          },
+          "image_url": {
+            "type": "string",
+            "description": "Public URL of the series image (nullable)",
+            "nullable": true
+          }
+        },
+        "description": "Series table with name and optional image URL"
+      },
+      "idInt": {
+        "type": "integer",
+        "minimum": 0,
+        "exclusiveMinimum": true
+      },
+      "uuid": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "timestamp": {
+        "type": "string"
+      },
+      "userSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/uuid"
+              }
+            ],
+            "description": "User id (auth.users.id, UUID primary key)"
+          },
+          "created_at": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/timestamp"
+              }
+            ],
+            "description": "Row creation time in UTC (ISO 8601)"
+          }
+        },
+        "required": [
+          "id",
+          "created_at"
+        ],
+        "description": "User table as mirrored from Supabase auth.users"
+      },
+      "seriesSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/idInt"
+              }
+            ],
+            "description": "Series numeric identifier (PK)"
+          },
+          "created_at": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/timestamp"
+              }
+            ],
+            "description": "Row creation time in UTC (ISO 8601)"
+          },
+          "name": {
+            "type": "string",
+            "description": "Series title/name"
+          },
+          "image_url": {
+            "type": "string",
+            "description": "Public URL of the series image (nullable)"
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "name",
+          "image_url"
+        ],
+        "description": "Series table with name and optional image URL"
+      },
+      "seasonSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/idInt"
+              }
+            ],
+            "description": "Season numeric identifier (PK)"
+          },
+          "created_at": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/timestamp"
+              }
+            ],
+            "description": "Row creation time in UTC (ISO 8601)"
+          },
+          "fk_series": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/idInt"
+              }
+            ],
+            "description": "Foreign key to series.id"
+          },
+          "name": {
+            "type": "string",
+            "description": "Season name/number label"
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "fk_series",
+          "name"
+        ],
+        "description": "Seasons table belonging to a series"
+      },
+      "episodeSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/idInt"
+              }
+            ],
+            "description": "Episode numeric identifier (PK)"
+          },
+          "created_at": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/timestamp"
+              }
+            ],
+            "description": "Row creation time in UTC (ISO 8601)"
+          },
+          "fk_season": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/idInt"
+              }
+            ],
+            "description": "Foreign key to seasons.id"
+          },
+          "name": {
+            "type": "string",
+            "description": "Episode name/title"
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "fk_season",
+          "name"
+        ],
+        "description": "Episodes table belonging to a specific season"
+      },
+      "commentSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/idInt"
+              }
+            ],
+            "description": "Comment numeric identifier (PK)"
+          },
+          "created_at": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/timestamp"
+              }
+            ],
+            "description": "Row creation time in UTC (ISO 8601)"
+          },
+          "fk_series": {
+            "type": "object",
+            "nullable": true,
+            "description": "Optional FK to series.id"
+          },
+          "fk_season": {
+            "type": "object",
+            "nullable": true,
+            "description": "Optional FK to seasons.id"
+          },
+          "fk_episode": {
+            "type": "object",
+            "nullable": true,
+            "description": "Optional FK to episodes.id"
+          },
+          "fk_user": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/uuid"
+              }
+            ],
+            "description": "FK to user.id (auth.users.id)"
+          },
+          "text": {
+            "type": "string",
+            "nullable": true,
+            "description": "Optional comment text body"
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "fk_user"
+        ],
+        "description": "Comments table referencing optional series/season/episode and author user"
+      }
+    },
+    "responses": {
+      "400": {
+        "description": "Bad Request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Invalid request parameters"
+                },
+                "code": {
+                  "type": "string",
+                  "example": "400"
+                }
+              }
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Authentication required"
+                },
+                "code": {
+                  "type": "string",
+                  "example": "401"
+                }
+              }
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Access denied"
+                },
+                "code": {
+                  "type": "string",
+                  "example": "403"
+                }
+              }
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Resource not found"
+                },
+                "code": {
+                  "type": "string",
+                  "example": "404"
+                }
+              }
+            }
+          }
+        }
+      },
+      "409": {
+        "description": "Conflict",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Resource already exists"
+                },
+                "code": {
+                  "type": "string",
+                  "example": "409"
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "An unexpected error occurred"
+                },
+                "code": {
+                  "type": "string",
+                  "example": "500"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "outputDir": "./public",
+  "paths": {
+    "/comments": {
+      "get": {
+        "operationId": "get-comments",
+        "summary": "List all comments",
+        "description": "Fetches all comments ordered by id, with optional filters",
+        "tags": [
+          "Comments"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "post": {
+        "operationId": "post-comments",
+        "summary": "Create a new comment",
+        "description": "Creates a comment with optional FK references and required fk_user",
+        "tags": [
+          "Comments"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/commentCreateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/comments/{id}": {
+      "get": {
+        "operationId": "get-comments-{id}",
+        "summary": "Get comment by id",
+        "description": "Fetch a single comment by id",
+        "tags": [
+          "Comments"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer",
+              "description": "Resource ID"
+            },
+            "required": true,
+            "description": "Resource ID",
+            "example": 123
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "put": {
+        "operationId": "put-comments-{id}",
+        "summary": "Update comment",
+        "description": "Partially update comment by id",
+        "tags": [
+          "Comments"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer",
+              "description": "Resource ID"
+            },
+            "required": true,
+            "description": "Resource ID",
+            "example": 123
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete-comments-{id}",
+        "summary": "Delete comment",
+        "description": "Delete comment by id",
+        "tags": [
+          "Comments"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer",
+              "description": "Resource ID"
+            },
+            "required": true,
+            "description": "Resource ID",
+            "example": 123
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/episodes": {
+      "get": {
+        "operationId": "get-episodes",
+        "summary": "List all episodes",
+        "description": "Fetches all episodes ordered by id",
+        "tags": [
+          "Episodes"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EpisodeListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "post": {
+        "operationId": "post-episodes",
+        "summary": "Create a new episode",
+        "description": "Creates an episode with name and fk_season",
+        "tags": [
+          "Episodes"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/episodeCreateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EpisodeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/episodes/{id}": {
+      "get": {
+        "operationId": "get-episodes-{id}",
+        "summary": "Get episode by id",
+        "description": "Fetch a single episode by id",
+        "tags": [
+          "Episodes"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer",
+              "description": "Resource ID"
+            },
+            "required": true,
+            "description": "Resource ID",
+            "example": 123
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EpisodeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "put": {
+        "operationId": "put-episodes-{id}",
+        "summary": "Update episode",
+        "description": "Partially update episode by id",
+        "tags": [
+          "Episodes"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer",
+              "description": "Resource ID"
+            },
+            "required": true,
+            "description": "Resource ID",
+            "example": 123
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EpisodeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete-episodes-{id}",
+        "summary": "Delete episode",
+        "description": "Delete episode by id",
+        "tags": [
+          "Episodes"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer",
+              "description": "Resource ID"
+            },
+            "required": true,
+            "description": "Resource ID",
+            "example": 123
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/seasons": {
+      "get": {
+        "operationId": "get-seasons",
+        "summary": "List all seasons",
+        "description": "Fetches all seasons ordered by id",
+        "tags": [
+          "Seasons"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeasonListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "post": {
+        "operationId": "post-seasons",
+        "summary": "Create a new season",
+        "description": "Creates a season with name and fk_series",
+        "tags": [
+          "Seasons"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/seasonCreateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeasonResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/seasons/{id}": {
+      "get": {
+        "operationId": "get-seasons-{id}",
+        "summary": "Get season by id",
+        "description": "Fetch a single season by id",
+        "tags": [
+          "Seasons"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer",
+              "description": "Resource ID"
+            },
+            "required": true,
+            "description": "Resource ID",
+            "example": 123
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeasonResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "put": {
+        "operationId": "put-seasons-{id}",
+        "summary": "Update season",
+        "description": "Partially update season by id",
+        "tags": [
+          "Seasons"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer",
+              "description": "Resource ID"
+            },
+            "required": true,
+            "description": "Resource ID",
+            "example": 123
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeasonResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete-seasons-{id}",
+        "summary": "Delete season",
+        "description": "Delete season by id",
+        "tags": [
+          "Seasons"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer",
+              "description": "Resource ID"
+            },
+            "required": true,
+            "description": "Resource ID",
+            "example": 123
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/seasons/{id}/episodes": {
+      "get": {
+        "operationId": "get-seasons-{id}-episodes",
+        "summary": "List episodes for a season",
+        "description": "Fetches all episodes belonging to a season (hierarchical)",
+        "tags": [
+          "Seasons"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer",
+              "description": "Resource ID"
+            },
+            "required": true,
+            "description": "Resource ID",
+            "example": 123
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EpisodeListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/series": {
+      "get": {
+        "operationId": "get-series",
+        "summary": "List all series",
+        "description": "Fetches all series ordered by id",
+        "tags": [
+          "Series"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeriesListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "post": {
+        "operationId": "post-series",
+        "summary": "Create a new series",
+        "description": "Creates a series with name and optional image_url",
+        "tags": [
+          "Series"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/seriesCreateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeriesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/series/{id}": {
+      "get": {
+        "operationId": "get-series-{id}",
+        "summary": "Get series by id",
+        "description": "Fetch a single series by id",
+        "tags": [
+          "Series"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer",
+              "description": "Resource ID"
+            },
+            "required": true,
+            "description": "Resource ID",
+            "example": 123
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeriesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "put": {
+        "operationId": "put-series-{id}",
+        "summary": "Update series",
+        "description": "Partially update series by id",
+        "tags": [
+          "Series"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer",
+              "description": "Resource ID"
+            },
+            "required": true,
+            "description": "Resource ID",
+            "example": 123
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeriesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete-series-{id}",
+        "summary": "Delete series",
+        "description": "Delete series by id",
+        "tags": [
+          "Series"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer",
+              "description": "Resource ID"
+            },
+            "required": true,
+            "description": "Resource ID",
+            "example": 123
+          }
+        ],
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/series/{id}/seasons": {
+      "get": {
+        "operationId": "get-series-{id}-seasons",
+        "summary": "List seasons for a series",
+        "description": "Fetches all seasons belonging to a series (hierarchical)",
+        "tags": [
+          "Series"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer",
+              "description": "Resource ID"
+            },
+            "required": true,
+            "description": "Resource ID",
+            "example": 123
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeasonListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    }
+  }
+}

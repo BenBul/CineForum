@@ -1,0 +1,15 @@
+meta {
+  name: Delete episode
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/episodes/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: 
+}

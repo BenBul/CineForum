@@ -1,0 +1,15 @@
+meta {
+  name: Update episode
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/episodes/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: 
+}

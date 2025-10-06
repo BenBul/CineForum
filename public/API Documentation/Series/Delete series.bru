@@ -1,0 +1,15 @@
+meta {
+  name: Delete series
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/series/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: 
+}

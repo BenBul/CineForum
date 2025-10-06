@@ -1,0 +1,15 @@
+meta {
+  name: List episodes for a season
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/seasons/:id/episodes
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: 
+}

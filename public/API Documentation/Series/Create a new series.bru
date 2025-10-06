@@ -1,0 +1,18 @@
+meta {
+  name: Create a new series
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/series
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "",
+    "image_url": ""
+  }
+}

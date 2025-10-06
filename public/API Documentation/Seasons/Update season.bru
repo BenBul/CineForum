@@ -1,0 +1,15 @@
+meta {
+  name: Update season
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/seasons/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: 
+}
