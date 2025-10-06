@@ -6,10 +6,17 @@ meta {
 
 put {
   url: {{baseUrl}}/episodes/:id
-  body: none
+  body: json
   auth: inherit
 }
 
 params:path {
-  id: 
+  id: 1
+}
+
+body:json {
+  {
+    "name": "Episode 1 Updated",
+    "fk_season": 1
+  }
 }

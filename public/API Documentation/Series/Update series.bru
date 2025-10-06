@@ -6,10 +6,17 @@ meta {
 
 put {
   url: {{baseUrl}}/series/:id
-  body: none
+  body: json
   auth: inherit
 }
 
 params:path {
-  id: 
+  id: 1
+}
+
+body:json {
+  {
+    "name": "Updated Series Name",
+    "image_url": "https://example.com/new.jpg"
+  }
 }

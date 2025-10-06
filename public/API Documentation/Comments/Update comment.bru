@@ -6,10 +6,17 @@ meta {
 
 put {
   url: {{baseUrl}}/comments/:id
-  body: none
+  body: json
   auth: inherit
 }
 
 params:path {
-  id: 
+  id: 1
+}
+
+body:json {
+  {
+    "text": "Edited comment",
+    "fk_series": 1
+  }
 }
