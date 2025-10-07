@@ -66,6 +66,7 @@ export const commentSchema = z
       .describe("Optional FK to episodes.id"),
     fk_user: uuid.describe("FK to user.id (auth.users.id)"),
     text: z.string().optional().describe("Optional comment text body"),
+    rating: z.number().optional().describe("Optional rating between 1 and 5"),
   })
   .describe(
     "Comments table referencing optional series/season/episode and author user"
@@ -75,14 +76,37 @@ export const commentSchema = z
 export const seriesCreateInput = seriesSchema
   .pick({ name: true, image_url: true })
   .partial({ image_url: true })
-  .describe("Payload to create a series");
+  .refine(
+    (obj) =>
+      typeof obj.image_url === "undefined" ||
+      obj.image_url === null ||
+      (() => {
+        try {
+          const u = new URL(String(obj.image_url));
+          return u.protocol === "http:" || u.protocol === "https:";
+        } catch {
+          return false;
+        }
+      })(),
+    { message: "image_url must be a valid http/https URL" }
+  );
 export const seriesUpdateInput = seriesSchema
   .pick({ name: true, image_url: true })
   .partial()
-  .refine((obj) => Object.keys(obj).length > 0, {
-    message: "At least one field to update is required",
-  })
-  .describe("Payload to update a series");
+  .refine(
+    (obj) =>
+      typeof obj.image_url === "undefined" ||
+      obj.image_url === null ||
+      (() => {
+        try {
+          const u = new URL(String(obj.image_url));
+          return u.protocol === "http:" || u.protocol === "https:";
+        } catch {
+          return false;
+        }
+      })(),
+    { message: "image_url must be a valid http/https URL" }
+  );
 
 export const seasonCreateInput = seasonSchema
   .pick({ name: true, fk_series: true })
@@ -113,6 +137,7 @@ export const commentCreateInput = commentSchema
     fk_episode: true,
     fk_user: true,
     text: true,
+    rating: true,
   })
   .describe("Payload to create a comment");
 export const commentUpdateInput = commentSchema
@@ -122,6 +147,7 @@ export const commentUpdateInput = commentSchema
     fk_episode: true,
     fk_user: true,
     text: true,
+    rating: true,
   })
   .partial()
   .refine((obj) => Object.keys(obj).length > 0, {

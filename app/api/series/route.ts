@@ -35,6 +35,28 @@ export async function POST(request: NextRequest) {
   };
   if (!name)
     return NextResponse.json({ error: "name is required" }, { status: 422 });
+  if (typeof image_url !== "undefined" && image_url !== null) {
+    if (typeof image_url !== "string" || image_url.trim() === "") {
+      return NextResponse.json(
+        { error: "image_url must be a valid http/https URL" },
+        { status: 422 }
+      );
+    }
+    try {
+      const parsed = new URL(image_url);
+      if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+        return NextResponse.json(
+          { error: "image_url must be a valid http/https URL" },
+          { status: 422 }
+        );
+      }
+    } catch {
+      return NextResponse.json(
+        { error: "image_url must be a valid http/https URL" },
+        { status: 422 }
+      );
+    }
+  }
   const { data, error } = await supabase
     .from("series")
     .insert([{ name, image_url: image_url || null }])

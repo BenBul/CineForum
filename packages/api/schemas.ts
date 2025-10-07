@@ -58,10 +58,38 @@ export const commentSchema = z
 
 export const seriesCreateInput = seriesSchema
   .pick({ name: true, image_url: true })
-  .partial({ image_url: true });
+  .partial({ image_url: true })
+  .refine(
+    (obj) =>
+      typeof obj.image_url === "undefined" ||
+      obj.image_url === null ||
+      (() => {
+        try {
+          const u = new URL(String(obj.image_url));
+          return u.protocol === "http:" || u.protocol === "https:";
+        } catch {
+          return false;
+        }
+      })(),
+    { message: "image_url must be a valid http/https URL" }
+  );
 export const seriesUpdateInput = seriesSchema
   .pick({ name: true, image_url: true })
-  .partial();
+  .partial()
+  .refine(
+    (obj) =>
+      typeof obj.image_url === "undefined" ||
+      obj.image_url === null ||
+      (() => {
+        try {
+          const u = new URL(String(obj.image_url));
+          return u.protocol === "http:" || u.protocol === "https:";
+        } catch {
+          return false;
+        }
+      })(),
+    { message: "image_url must be a valid http/https URL" }
+  );
 
 export const seasonCreateInput = seasonSchema.pick({
   name: true,

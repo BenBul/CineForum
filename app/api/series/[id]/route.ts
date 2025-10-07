@@ -53,6 +53,28 @@ export async function PUT(request: NextRequest, context: any) {
       { status: 422 }
     );
   }
+  if (typeof body.image_url !== "undefined" && body.image_url !== null) {
+    if (typeof body.image_url !== "string" || body.image_url.trim() === "") {
+      return NextResponse.json(
+        { error: "image_url must be a valid http/https URL" },
+        { status: 422 }
+      );
+    }
+    try {
+      const parsed = new URL(body.image_url);
+      if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+        return NextResponse.json(
+          { error: "image_url must be a valid http/https URL" },
+          { status: 422 }
+        );
+      }
+    } catch {
+      return NextResponse.json(
+        { error: "image_url must be a valid http/https URL" },
+        { status: 422 }
+      );
+    }
+  }
   const update: Record<string, unknown> = {};
   if (typeof body.name !== "undefined") update.name = body.name;
   if (typeof body.image_url !== "undefined") update.image_url = body.image_url;

@@ -46,6 +46,38 @@ export async function POST(request: NextRequest) {
       { error: "fk_season is required" },
       { status: 422 }
     );
+  if (typeof image_url !== "undefined" && image_url !== null) {
+    if (typeof image_url !== "string" || image_url.trim() === "") {
+      return NextResponse.json(
+        { error: "image_url must be a valid http/https URL" },
+        { status: 422 }
+      );
+    }
+    try {
+      const parsed = new URL(image_url);
+      if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+        return NextResponse.json(
+          { error: "image_url must be a valid http/https URL" },
+          { status: 422 }
+        );
+      }
+    } catch {
+      return NextResponse.json(
+        { error: "image_url must be a valid http/https URL" },
+        { status: 422 }
+      );
+    }
+  }
+  // Ensure referenced season exists; return 404 if not found
+  const parent = await supabase
+    .from("seasons")
+    .select("id")
+    .eq("id", Number(fk_season))
+    .maybeSingle();
+  if (parent.error)
+    return NextResponse.json({ error: parent.error.message }, { status: 500 });
+  if (!parent.data)
+    return NextResponse.json({ error: "Season not found" }, { status: 404 });
   const { data, error } = await supabase
     .from("episodes")
     .insert([
