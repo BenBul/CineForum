@@ -4,7 +4,7 @@ import {
   EpisodeListResponse,
   EpisodeResponse,
   episodeCreateInput,
-} from "../../../packages/api/schemas";
+} from "../../schemas";
 
 /**
  * List all episodes

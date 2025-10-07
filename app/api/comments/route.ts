@@ -25,7 +25,8 @@ export async function GET(request: NextRequest) {
   if (fk_episode) query = query.eq("fk_episode", Number(fk_episode));
   if (fk_user) query = query.eq("fk_user", String(fk_user));
   const { data, error } = await query.order("id");
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error)
+    return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json(data);
 }
 
@@ -62,8 +63,7 @@ export async function POST(request: NextRequest) {
     ])
     .select("*")
     .single();
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error)
+    return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json(data, { status: 201 });
 }
-
-

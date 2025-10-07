@@ -9,18 +9,16 @@ import { IdParams, EpisodeResponse } from "../../../schemas";
  * @response EpisodeResponse
  * @openapi
  */
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(_request: NextRequest, context: any) {
+  const { id } = await context.params;
   const supabase = getSupabase();
-  const id = Number(params.id);
-  if (!Number.isFinite(id))
+  const idNum = Number(id);
+  if (!Number.isFinite(idNum))
     return NextResponse.json({ error: "Invalid id" }, { status: 400 });
   const { data, error } = await supabase
     .from("episodes")
     .select("*")
-    .eq("id", id)
+    .eq("id", idNum)
     .maybeSingle();
   if (error)
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -36,13 +34,11 @@ export async function GET(
  * @response EpisodeResponse
  * @openapi
  */
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, context: any) {
+  const { id } = await context.params;
   const supabase = getSupabase();
-  const id = Number(params.id);
-  if (!Number.isFinite(id))
+  const idNum = Number(id);
+  if (!Number.isFinite(idNum))
     return NextResponse.json({ error: "Invalid id" }, { status: 400 });
   const body = (await request.json().catch(() => ({}))) as {
     name?: string;
@@ -61,7 +57,7 @@ export async function PUT(
   const { data, error } = await supabase
     .from("episodes")
     .update(update)
-    .eq("id", id)
+    .eq("id", idNum)
     .select("*")
     .maybeSingle();
   if (error)
@@ -77,18 +73,16 @@ export async function PUT(
  * @pathParams IdParams
  * @openapi
  */
-export async function DELETE(
-  _request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(_request: NextRequest, context: any) {
+  const { id } = await context.params;
   const supabase = getSupabase();
-  const id = Number(params.id);
-  if (!Number.isFinite(id))
+  const idNum = Number(id);
+  if (!Number.isFinite(idNum))
     return NextResponse.json({ error: "Invalid id" }, { status: 400 });
   const { data, error } = await supabase
     .from("episodes")
     .delete()
-    .eq("id", id)
+    .eq("id", idNum)
     .select("id")
     .maybeSingle();
   if (error)
