@@ -1,16 +1,15 @@
 {
   "compilerOptions": {
     "target": "es2020",
-    "lib": [
-      "dom",
-      "es2020"
-    ],
+    "lib": ["dom", "es2020"],
     "module": "esnext",
     "moduleResolution": "bundler",
     "strict": true,
     "jsx": "preserve",
     "baseUrl": ".",
-    "paths": {},
+    "paths": {
+      "@/*": ["./*"]
+    },
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -24,14 +23,6 @@
       }
     ]
   },
-  "include": [
-    "app",
-    "next-env.d.ts",
-    "packages",
-    "src",
-    ".next/types/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["app", "next-env.d.ts", "packages", "src", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
 }
