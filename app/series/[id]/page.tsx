@@ -170,7 +170,6 @@ export default function SeriesDetailPage({
         },
         body: JSON.stringify({
           fk_series: parseInt(id),
-          fk_user: session.user.id,
           text: commentText,
           rating: commentRating,
         }),

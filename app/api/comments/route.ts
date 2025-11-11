@@ -47,27 +47,18 @@ export async function POST(request: NextRequest) {
   if (permissionError) return permissionError;
 
   const supabase = getSupabase();
-  const { fk_series, fk_season, fk_episode, fk_user, text, rating } =
-    (await request.json().catch(() => ({}))) as {
-      fk_series?: number | null;
-      fk_season?: number | null;
-      fk_episode?: number | null;
-      fk_user?: string;
-      text?: string;
-      rating?: number;
-    };
+  const { fk_series, fk_season, fk_episode, text, rating } = (await request
+    .json()
+    .catch(() => ({}))) as {
+    fk_series?: number | null;
+    fk_season?: number | null;
+    fk_episode?: number | null;
+    text?: string;
+    rating?: number;
+  };
 
-  // Ensure the fk_user matches the authenticated user (users can only create comments as themselves)
-  // Admins can create comments for any user
-  if (authContext.role !== "admin" && fk_user !== authContext.userId) {
-    return NextResponse.json(
-      { error: "Cannot create comment for another user" },
-      { status: 403 }
-    );
-  }
-
-  if (!fk_user)
-    return NextResponse.json({ error: "fk_user is required" }, { status: 422 });
+  // Always use the authenticated user's ID for the comment
+  const fk_user = authContext.userId;
   if (!fk_series && !fk_season && !fk_episode)
     return NextResponse.json(
       { error: "fk_series, fk_season, or fk_episode is required" },
