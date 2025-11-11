@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "../../_lib/supabase";
 import { IdParams, CommentResponse } from "../../../../packages/api/schemas";
+import { getAuthContext, requirePermission } from "../../_lib/auth";
 
 /**
  * Get comment by id
@@ -10,6 +11,7 @@ import { IdParams, CommentResponse } from "../../../../packages/api/schemas";
  * @openapi
  */
 export async function GET(_request: NextRequest, context: any) {
+  // Anyone can view comments (guests, users, admins)
   const { id } = await context.params;
   const supabase = getSupabase();
   const idNum = Number(id);
@@ -29,17 +31,39 @@ export async function GET(_request: NextRequest, context: any) {
 
 /**
  * Update comment
- * @description Partially update comment by id
+ * @description Partially update comment by id (requires ownership or admin role)
  * @pathParams IdParams
  * @response CommentResponse
  * @openapi
  */
 export async function PUT(request: NextRequest, context: any) {
+  const authContext = await getAuthContext(request);
   const { id } = await context.params;
   const supabase = getSupabase();
   const idNum = Number(id);
   if (!Number.isFinite(idNum))
     return NextResponse.json({ error: "Invalid id" }, { status: 400 });
+
+  // First, fetch the comment to check ownership
+  const { data: existingComment, error: fetchError } = await supabase
+    .from("comments")
+    .select("fk_user")
+    .eq("id", idNum)
+    .maybeSingle();
+
+  if (fetchError)
+    return NextResponse.json({ error: fetchError.message }, { status: 500 });
+  if (!existingComment)
+    return NextResponse.json({ error: "Comment not found" }, { status: 404 });
+
+  // Check if user has permission to update (owner or admin)
+  const permissionError = requirePermission(
+    authContext,
+    "update",
+    existingComment.fk_user
+  );
+  if (permissionError) return permissionError;
+
   const body = (await request.json().catch(() => ({}))) as {
     fk_series?: number | null;
     fk_season?: number | null;
@@ -75,16 +99,38 @@ export async function PUT(request: NextRequest, context: any) {
 
 /**
  * Delete comment
- * @description Delete comment by id
+ * @description Delete comment by id (requires ownership or admin role)
  * @pathParams IdParams
  * @openapi
  */
-export async function DELETE(_request: NextRequest, context: any) {
+export async function DELETE(request: NextRequest, context: any) {
+  const authContext = await getAuthContext(request);
   const { id } = await context.params;
   const supabase = getSupabase();
   const idNum = Number(id);
   if (!Number.isFinite(idNum))
     return NextResponse.json({ error: "Invalid id" }, { status: 400 });
+
+  // First, fetch the comment to check ownership
+  const { data: existingComment, error: fetchError } = await supabase
+    .from("comments")
+    .select("fk_user")
+    .eq("id", idNum)
+    .maybeSingle();
+
+  if (fetchError)
+    return NextResponse.json({ error: fetchError.message }, { status: 500 });
+  if (!existingComment)
+    return NextResponse.json({ error: "Comment not found" }, { status: 404 });
+
+  // Check if user has permission to delete (owner or admin)
+  const permissionError = requirePermission(
+    authContext,
+    "delete",
+    existingComment.fk_user
+  );
+  if (permissionError) return permissionError;
+
   const { data, error } = await supabase
     .from("comments")
     .delete()

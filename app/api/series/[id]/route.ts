@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "../../_lib/supabase";
 import { IdParams, SeriesResponse } from "../../../../packages/api/schemas";
+import { getAuthContext, requirePermission } from "../../_lib/auth";
 
 /**
  * Get series by id
@@ -10,6 +11,7 @@ import { IdParams, SeriesResponse } from "../../../../packages/api/schemas";
  * @openapi
  */
 export async function GET(_request: NextRequest, context: any) {
+  // Anyone can view series (guests, users, admins)
   const { id } = await context.params;
   const supabase = getSupabase();
   const idNum = Number(id);
@@ -29,17 +31,39 @@ export async function GET(_request: NextRequest, context: any) {
 
 /**
  * Update series
- * @description Partially update series by id
+ * @description Partially update series by id (requires ownership or admin role)
  * @pathParams IdParams
  * @response SeriesResponse
  * @openapi
  */
 export async function PUT(request: NextRequest, context: any) {
+  const authContext = await getAuthContext(request);
   const { id } = await context.params;
   const supabase = getSupabase();
   const idNum = Number(id);
   if (!Number.isFinite(idNum))
     return NextResponse.json({ error: "Invalid id" }, { status: 400 });
+
+  // First, fetch the series to check ownership
+  const { data: existingSeries, error: fetchError } = await supabase
+    .from("series")
+    .select("created_by")
+    .eq("id", idNum)
+    .maybeSingle();
+
+  if (fetchError)
+    return NextResponse.json({ error: fetchError.message }, { status: 500 });
+  if (!existingSeries)
+    return NextResponse.json({ error: "Series not found" }, { status: 404 });
+
+  // Check if user has permission to update (owner or admin)
+  const permissionError = requirePermission(
+    authContext,
+    "update",
+    existingSeries.created_by
+  );
+  if (permissionError) return permissionError;
+
   const body = (await request.json().catch(() => ({}))) as {
     name?: string;
     image_url?: string | null;
@@ -93,16 +117,38 @@ export async function PUT(request: NextRequest, context: any) {
 
 /**
  * Delete series
- * @description Delete series by id
+ * @description Delete series by id (requires ownership or admin role)
  * @pathParams IdParams
  * @openapi
  */
-export async function DELETE(_request: NextRequest, context: any) {
+export async function DELETE(request: NextRequest, context: any) {
+  const authContext = await getAuthContext(request);
   const { id } = await context.params;
   const supabase = getSupabase();
   const idNum = Number(id);
   if (!Number.isFinite(idNum))
     return NextResponse.json({ error: "Invalid id" }, { status: 400 });
+
+  // First, fetch the series to check ownership
+  const { data: existingSeries, error: fetchError } = await supabase
+    .from("series")
+    .select("created_by")
+    .eq("id", idNum)
+    .maybeSingle();
+
+  if (fetchError)
+    return NextResponse.json({ error: fetchError.message }, { status: 500 });
+  if (!existingSeries)
+    return NextResponse.json({ error: "Series not found" }, { status: 404 });
+
+  // Check if user has permission to delete (owner or admin)
+  const permissionError = requirePermission(
+    authContext,
+    "delete",
+    existingSeries.created_by
+  );
+  if (permissionError) return permissionError;
+
   const { data, error } = await supabase
     .from("series")
     .delete()

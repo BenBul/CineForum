@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "../../_lib/supabase";
 import { IdParams, SeasonResponse } from "../../../../packages/api/schemas";
+import { getAuthContext, requirePermission } from "../../_lib/auth";
 
 /**
  * Get season by id
@@ -10,6 +11,7 @@ import { IdParams, SeasonResponse } from "../../../../packages/api/schemas";
  * @openapi
  */
 export async function GET(_request: NextRequest, context: any) {
+  // Anyone can view seasons (guests, users, admins)
   const { id } = await context.params;
   const supabase = getSupabase();
   const idNum = Number(id);
@@ -29,17 +31,39 @@ export async function GET(_request: NextRequest, context: any) {
 
 /**
  * Update season
- * @description Partially update season by id
+ * @description Partially update season by id (requires ownership or admin role)
  * @pathParams IdParams
  * @response SeasonResponse
  * @openapi
  */
 export async function PUT(request: NextRequest, context: any) {
+  const authContext = await getAuthContext(request);
   const { id } = await context.params;
   const supabase = getSupabase();
   const idNum = Number(id);
   if (!Number.isFinite(idNum))
     return NextResponse.json({ error: "Invalid id" }, { status: 400 });
+
+  // First, fetch the season to check ownership
+  const { data: existingSeason, error: fetchError } = await supabase
+    .from("seasons")
+    .select("created_by")
+    .eq("id", idNum)
+    .maybeSingle();
+
+  if (fetchError)
+    return NextResponse.json({ error: fetchError.message }, { status: 500 });
+  if (!existingSeason)
+    return NextResponse.json({ error: "Season not found" }, { status: 404 });
+
+  // Check if user has permission to update (owner or admin)
+  const permissionError = requirePermission(
+    authContext,
+    "update",
+    existingSeason.created_by
+  );
+  if (permissionError) return permissionError;
+
   const body = (await request.json().catch(() => ({}))) as {
     name?: string;
     fk_series?: number;
@@ -69,16 +93,38 @@ export async function PUT(request: NextRequest, context: any) {
 
 /**
  * Delete season
- * @description Delete season by id
+ * @description Delete season by id (requires ownership or admin role)
  * @pathParams IdParams
  * @openapi
  */
-export async function DELETE(_request: NextRequest, context: any) {
+export async function DELETE(request: NextRequest, context: any) {
+  const authContext = await getAuthContext(request);
   const { id } = await context.params;
   const supabase = getSupabase();
   const idNum = Number(id);
   if (!Number.isFinite(idNum))
     return NextResponse.json({ error: "Invalid id" }, { status: 400 });
+
+  // First, fetch the season to check ownership
+  const { data: existingSeason, error: fetchError } = await supabase
+    .from("seasons")
+    .select("created_by")
+    .eq("id", idNum)
+    .maybeSingle();
+
+  if (fetchError)
+    return NextResponse.json({ error: fetchError.message }, { status: 500 });
+  if (!existingSeason)
+    return NextResponse.json({ error: "Season not found" }, { status: 404 });
+
+  // Check if user has permission to delete (owner or admin)
+  const permissionError = requirePermission(
+    authContext,
+    "delete",
+    existingSeason.created_by
+  );
+  if (permissionError) return permissionError;
+
   const { data, error } = await supabase
     .from("seasons")
     .delete()

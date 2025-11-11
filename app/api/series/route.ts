@@ -5,6 +5,7 @@ import {
   SeriesResponse,
   seriesCreateInput,
 } from "../../schemas";
+import { getAuthContext, requirePermission } from "../_lib/auth";
 
 /**
  * List all series
@@ -13,6 +14,7 @@ import {
  * @openapi
  */
 export async function GET(_request: NextRequest) {
+  // Anyone can view series (guests, users, admins)
   const supabase = getSupabase();
   const { data, error } = await supabase.from("series").select("*").order("id");
   if (error)
@@ -22,12 +24,18 @@ export async function GET(_request: NextRequest) {
 
 /**
  * Create a new series
- * @description Creates a series with name and optional image_url
+ * @description Creates a series with name and optional image_url (requires authentication)
  * @body seriesCreateInput
  * @response SeriesResponse
  * @openapi
  */
 export async function POST(request: NextRequest) {
+  const authContext = await getAuthContext(request);
+
+  // Users and admins can create series
+  const permissionError = requirePermission(authContext, "create");
+  if (permissionError) return permissionError;
+
   const supabase = getSupabase();
   const { name, image_url } = (await request.json().catch(() => ({}))) as {
     name?: string;
@@ -59,7 +67,9 @@ export async function POST(request: NextRequest) {
   }
   const { data, error } = await supabase
     .from("series")
-    .insert([{ name, image_url: image_url || null }])
+    .insert([
+      { name, image_url: image_url || null, created_by: authContext.userId },
+    ])
     .select("*")
     .single();
   if (error)

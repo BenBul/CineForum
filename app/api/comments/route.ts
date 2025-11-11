@@ -5,6 +5,7 @@ import {
   CommentResponse,
   commentCreateInput,
 } from "../../../packages/api/schemas";
+import { getAuthContext, requirePermission } from "../_lib/auth";
 
 /**
  * List all comments
@@ -13,6 +14,7 @@ import {
  * @openapi
  */
 export async function GET(request: NextRequest) {
+  // Anyone can view comments (guests, users, admins)
   const supabase = getSupabase();
   const { searchParams } = new URL(request.url);
   let query = supabase.from("comments").select("*");
@@ -32,12 +34,18 @@ export async function GET(request: NextRequest) {
 
 /**
  * Create a new comment
- * @description Creates a comment with optional FK references and required fk_user
+ * @description Creates a comment with optional FK references and required fk_user (requires authentication)
  * @body commentCreateInput
  * @response CommentResponse
  * @openapi
  */
 export async function POST(request: NextRequest) {
+  const authContext = await getAuthContext(request);
+
+  // Users and admins can create comments
+  const permissionError = requirePermission(authContext, "create");
+  if (permissionError) return permissionError;
+
   const supabase = getSupabase();
   const { fk_series, fk_season, fk_episode, fk_user, text, rating } =
     (await request.json().catch(() => ({}))) as {
@@ -48,6 +56,16 @@ export async function POST(request: NextRequest) {
       text?: string;
       rating?: number;
     };
+
+  // Ensure the fk_user matches the authenticated user (users can only create comments as themselves)
+  // Admins can create comments for any user
+  if (authContext.role !== "admin" && fk_user !== authContext.userId) {
+    return NextResponse.json(
+      { error: "Cannot create comment for another user" },
+      { status: 403 }
+    );
+  }
+
   if (!fk_user)
     return NextResponse.json({ error: "fk_user is required" }, { status: 422 });
   if (!fk_series && !fk_season && !fk_episode)

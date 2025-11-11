@@ -5,6 +5,7 @@ import {
   EpisodeResponse,
   episodeCreateInput,
 } from "../../schemas";
+import { getAuthContext, requirePermission } from "../_lib/auth";
 
 /**
  * List all episodes
@@ -13,6 +14,7 @@ import {
  * @openapi
  */
 export async function GET(_request: NextRequest) {
+  // Anyone can view episodes (guests, users, admins)
   const supabase = getSupabase();
   const { data, error } = await supabase
     .from("episodes")
@@ -25,12 +27,18 @@ export async function GET(_request: NextRequest) {
 
 /**
  * Create a new episode
- * @description Creates an episode with name and fk_season
+ * @description Creates an episode with name and fk_season (requires authentication)
  * @body episodeCreateInput
  * @response EpisodeResponse
  * @openapi
  */
 export async function POST(request: NextRequest) {
+  const authContext = await getAuthContext(request);
+
+  // Users and admins can create episodes
+  const permissionError = requirePermission(authContext, "create");
+  if (permissionError) return permissionError;
+
   const supabase = getSupabase();
   const { name, fk_season, image_url } = (await request
     .json()
@@ -81,7 +89,12 @@ export async function POST(request: NextRequest) {
   const { data, error } = await supabase
     .from("episodes")
     .insert([
-      { name, fk_season: Number(fk_season), image_url: image_url || null },
+      {
+        name,
+        fk_season: Number(fk_season),
+        image_url: image_url || null,
+        created_by: authContext.userId,
+      },
     ])
     .select("*")
     .single();

@@ -5,6 +5,7 @@ import {
   SeasonResponse,
   seasonCreateInput,
 } from "../../../packages/api/schemas";
+import { getAuthContext, requirePermission } from "../_lib/auth";
 
 /**
  * List all seasons
@@ -13,6 +14,7 @@ import {
  * @openapi
  */
 export async function GET(_request: NextRequest) {
+  // Anyone can view seasons (guests, users, admins)
   const supabase = getSupabase();
   const { data, error } = await supabase
     .from("seasons")
@@ -25,12 +27,18 @@ export async function GET(_request: NextRequest) {
 
 /**
  * Create a new season
- * @description Creates a season with name and fk_series
+ * @description Creates a season with name and fk_series (requires authentication)
  * @body seasonCreateInput
  * @response SeasonResponse
  * @openapi
  */
 export async function POST(request: NextRequest) {
+  const authContext = await getAuthContext(request);
+
+  // Users and admins can create seasons
+  const permissionError = requirePermission(authContext, "create");
+  if (permissionError) return permissionError;
+
   const supabase = getSupabase();
   const { name, fk_series } = (await request.json().catch(() => ({}))) as {
     name?: string;
@@ -55,7 +63,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Series not found" }, { status: 404 });
   const { data, error } = await supabase
     .from("seasons")
-    .insert([{ name, fk_series: Number(fk_series) }])
+    .insert([
+      { name, fk_series: Number(fk_series), created_by: authContext.userId },
+    ])
     .select("*")
     .single();
   if (error)
