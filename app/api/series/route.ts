@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
   const { data, error } = await supabase
     .from("series")
     .insert([
-      { name, image_url: image_url || null, created_by: authContext.userId },
+      { name, image_url: image_url || null, fk_user: authContext.userId },
     ])
     .select("*")
     .single();

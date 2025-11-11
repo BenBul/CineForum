@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
         name,
         fk_season: Number(fk_season),
         image_url: image_url || null,
-        created_by: authContext.userId,
+        fk_user: authContext.userId,
       },
     ])
     .select("*")

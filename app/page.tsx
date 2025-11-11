@@ -7,7 +7,7 @@ export default function Page() {
   const router = useRouter();
 
   useEffect(() => {
-    router.push("/auth");
+    router.push("/series");
   }, [router]);
 
   return null;

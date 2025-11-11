@@ -47,7 +47,7 @@ export async function PUT(request: NextRequest, context: any) {
   // First, fetch the season to check ownership
   const { data: existingSeason, error: fetchError } = await supabase
     .from("seasons")
-    .select("created_by")
+    .select("fk_user")
     .eq("id", idNum)
     .maybeSingle();
 
@@ -60,7 +60,7 @@ export async function PUT(request: NextRequest, context: any) {
   const permissionError = requirePermission(
     authContext,
     "update",
-    existingSeason.created_by
+    existingSeason.fk_user
   );
   if (permissionError) return permissionError;
 
@@ -108,7 +108,7 @@ export async function DELETE(request: NextRequest, context: any) {
   // First, fetch the season to check ownership
   const { data: existingSeason, error: fetchError } = await supabase
     .from("seasons")
-    .select("created_by")
+    .select("fk_user")
     .eq("id", idNum)
     .maybeSingle();
 
@@ -121,7 +121,7 @@ export async function DELETE(request: NextRequest, context: any) {
   const permissionError = requirePermission(
     authContext,
     "delete",
-    existingSeason.created_by
+    existingSeason.fk_user
   );
   if (permissionError) return permissionError;
 

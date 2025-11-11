@@ -15,9 +15,7 @@ export const seriesSchema = z
     created_at: timestamp.describe("Row creation time in UTC (ISO 8601)"),
     name: z.string().describe("Series title/name"),
     image_url: z.string().describe("Public URL of the series image (nullable)"),
-    created_by: uuid.describe(
-      "FK to user.id (auth.users.id) - creator of series"
-    ),
+    fk_user: uuid.describe("FK to user.id (auth.users.id) - creator of series"),
   })
   .describe("Series table with name and optional image URL");
 
@@ -27,9 +25,7 @@ export const seasonSchema = z
     created_at: timestamp.describe("Row creation time in UTC (ISO 8601)"),
     fk_series: idInt.describe("Foreign key to series.id"),
     name: z.string().describe("Season name/number label"),
-    created_by: uuid.describe(
-      "FK to user.id (auth.users.id) - creator of season"
-    ),
+    fk_user: uuid.describe("FK to user.id (auth.users.id) - creator of season"),
   })
   .describe("Seasons table belonging to a series");
 
@@ -39,7 +35,7 @@ export const episodeSchema = z
     created_at: timestamp.describe("Row creation time in UTC (ISO 8601)"),
     fk_season: idInt.describe("Foreign key to seasons.id"),
     name: z.string().describe("Episode name/title"),
-    created_by: uuid.describe(
+    fk_user: uuid.describe(
       "FK to user.id (auth.users.id) - creator of episode"
     ),
   })

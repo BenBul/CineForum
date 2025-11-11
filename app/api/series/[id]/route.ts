@@ -47,7 +47,7 @@ export async function PUT(request: NextRequest, context: any) {
   // First, fetch the series to check ownership
   const { data: existingSeries, error: fetchError } = await supabase
     .from("series")
-    .select("created_by")
+    .select("fk_user")
     .eq("id", idNum)
     .maybeSingle();
 
@@ -60,7 +60,7 @@ export async function PUT(request: NextRequest, context: any) {
   const permissionError = requirePermission(
     authContext,
     "update",
-    existingSeries.created_by
+    existingSeries.fk_user
   );
   if (permissionError) return permissionError;
 
@@ -132,7 +132,7 @@ export async function DELETE(request: NextRequest, context: any) {
   // First, fetch the series to check ownership
   const { data: existingSeries, error: fetchError } = await supabase
     .from("series")
-    .select("created_by")
+    .select("fk_user")
     .eq("id", idNum)
     .maybeSingle();
 
@@ -145,7 +145,7 @@ export async function DELETE(request: NextRequest, context: any) {
   const permissionError = requirePermission(
     authContext,
     "delete",
-    existingSeries.created_by
+    existingSeries.fk_user
   );
   if (permissionError) return permissionError;
 

@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
   const { data, error } = await supabase
     .from("seasons")
     .insert([
-      { name, fk_series: Number(fk_series), created_by: authContext.userId },
+      { name, fk_series: Number(fk_series), fk_user: authContext.userId },
     ])
     .select("*")
     .single();
