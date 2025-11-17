@@ -10,10 +10,13 @@ post {
   auth: inherit
 }
 
+headers {
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6IkFPTHB4VGJmRmVNZWZUZVMiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3d5aXBrbWpwdXdpY2xydWVvZ2N0LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI5NjIzYmM1NS1hYjNmLTRmNjctYjUzMC1iOTBhN2Q1M2FlMzciLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzYzMzg0Nzc3LCJpYXQiOjE3NjMzODExNzcsImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicm9sZSI6ImFkbWluIn0sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoicGFzc3dvcmQiLCJ0aW1lc3RhbXAiOjE3NjMzODExNzd9XSwic2Vzc2lvbl9pZCI6Ijk0MzQyMGQ0LWM1ZTctNDYyOC1hNzg4LWMzZGI4ZTU1Y2ZjMyIsImlzX2Fub255bW91cyI6ZmFsc2V9.KXoyo3dqChLc-EIdtxm1QjBLDa2FBVPXVFDOnRYXmBM
+}
+
 body:json {
   {
     "fk_series": 1,
-    "fk_user": "b97074e0-8de1-468d-8937-e22fe77ac1a1",
     "text": "Great episode!",
     "rating": 3
   }

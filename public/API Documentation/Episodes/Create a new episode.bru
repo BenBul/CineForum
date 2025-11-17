@@ -10,6 +10,10 @@ post {
   auth: inherit
 }
 
+headers {
+  ~Authorization: Bearer {{authToken}}
+}
+
 body:json {
   {
     "name": "Episode 1",

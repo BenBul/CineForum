@@ -10,6 +10,10 @@ put {
   auth: inherit
 }
 
+headers {
+  ~Authorization: Bearer {{authToken}}
+}
+
 params:path {
   id: 1
 }
