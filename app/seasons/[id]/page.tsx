@@ -291,7 +291,10 @@ export default function SeasonDetailPage({
         <div className={styles.container}>
           {/* Breadcrumb navigation */}
           <div className={styles.breadcrumb}>
-            <button onClick={() => router.push("/home")} className={styles.breadcrumbLink}>
+            <button
+              onClick={() => router.push("/home")}
+              className={styles.breadcrumbLink}
+            >
               Home
             </button>
             <span className={styles.breadcrumbSeparator}>/</span>
@@ -312,9 +315,7 @@ export default function SeasonDetailPage({
           {/* Season header */}
           <div className={styles.header}>
             <h1 className={styles.title}>{season.name}</h1>
-            {series && (
-              <p className={styles.subtitle}>from {series.name}</p>
-            )}
+            {series && <p className={styles.subtitle}>from {series.name}</p>}
             {comments.length > 0 && (
               <div className={styles.ratingDisplay}>
                 <span className={styles.stars}>
@@ -430,7 +431,9 @@ export default function SeasonDetailPage({
                     >
                       <span
                         className={
-                          rating <= reviewRating ? styles.starFilled : styles.starEmpty
+                          rating <= reviewRating
+                            ? styles.starFilled
+                            : styles.starEmpty
                         }
                       >
                         ★
@@ -503,7 +506,9 @@ export default function SeasonDetailPage({
                     >
                       <span
                         className={
-                          rating <= reviewRating ? styles.starFilled : styles.starEmpty
+                          rating <= reviewRating
+                            ? styles.starFilled
+                            : styles.starEmpty
                         }
                       >
                         ★
