@@ -697,7 +697,12 @@ export default function SeriesDetailPage({
                 {seasons.map((season) => (
                   <div key={season.id} className={styles.season}>
                     <div className={styles.seasonHeader}>
-                      <h3>{season.name}</h3>
+                      <button
+                        onClick={() => router.push(`/seasons/${season.id}`)}
+                        className={styles.seasonNameButton}
+                      >
+                        <h3>{season.name}</h3>
+                      </button>
                       <div className={styles.seasonActions}>
                         {isLoggedIn && (
                           <>
