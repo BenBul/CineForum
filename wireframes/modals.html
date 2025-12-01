@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modal Examples - Wireframe</title>
+    <link rel="stylesheet" href="wireframe.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="container">
+        <div class="header-content">
+          <div class="logo">CineForum</div>
+          <nav>
+            <ul class="nav">
+              <li><a href="index.html">Home</a></li>
+              <li><a href="series-list.html">Series</a></li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <div class="container">
+        <h1 style="margin-bottom: 30px">Modal Dialog Examples</h1>
+
+        <p style="margin-bottom: 20px">
+          This page demonstrates the various modal dialogs used throughout the
+          application.
+        </p>
+
+        <div class="grid" style="grid-template-columns: repeat(2, 1fr)">
+          <div class="card">
+            <div class="card-content">
+              <h3 class="card-title">Add Review Modal</h3>
+              <p style="margin-bottom: 15px">
+                Used for adding ratings and reviews to series/episodes
+              </p>
+              <button
+                class="btn btn-primary"
+                onclick="showModal('review-modal')"
+              >
+                Show Modal
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-content">
+              <h3 class="card-title">Add Series Modal</h3>
+              <p style="margin-bottom: 15px">
+                Used for creating new TV series entries
+              </p>
+              <button
+                class="btn btn-primary"
+                onclick="showModal('series-modal')"
+              >
+                Show Modal
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-content">
+              <h3 class="card-title">Add Season Modal</h3>
+              <p style="margin-bottom: 15px">
+                Used for adding new seasons to a series
+              </p>
+              <button
+                class="btn btn-primary"
+                onclick="showModal('season-modal')"
+              >
+                Show Modal
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-content">
+              <h3 class="card-title">Add Episode Modal</h3>
+              <p style="margin-bottom: 15px">
+                Used for adding episodes to a season
+              </p>
+              <button
+                class="btn btn-primary"
+                onclick="showModal('episode-modal')"
+              >
+                Show Modal
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Add Review Modal -->
+    <div id="review-modal" class="modal-overlay" style="display: none">
+      <div class="modal">
+        <div class="modal-header">
+          <h2 class="modal-title">Add Your Review</h2>
+          <button class="close-btn" onclick="hideModal('review-modal')">
+            ✕
+          </button>
+        </div>
+        <div class="modal-content">
+          <form>
+            <div class="form-group">
+              <label class="form-label">Rating *</label>
+              <div style="font-size: 24px; margin-bottom: 10px">
+                <span>☆ ☆ ☆ ☆ ☆</span>
+                <span style="font-size: 14px; margin-left: 10px; color: #666"
+                  >5 / 5</span
+                >
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="review-text" class="form-label"
+                >Review (optional)</label
+              >
+              <textarea
+                id="review-text"
+                class="form-textarea"
+                placeholder="Share your thoughts about this series..."
+                rows="5"
+              ></textarea>
+            </div>
+
+            <div style="display: flex; gap: 10px; justify-content: flex-end">
+              <button
+                type="button"
+                class="btn"
+                onclick="hideModal('review-modal')"
+              >
+                Cancel
+              </button>
+              <button type="submit" class="btn btn-primary">
+                Submit Review
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Series Modal -->
+    <div id="series-modal" class="modal-overlay" style="display: none">
+      <div class="modal">
+        <div class="modal-header">
+          <h2 class="modal-title">Add New TV Series</h2>
+          <button class="close-btn" onclick="hideModal('series-modal')">
+            ✕
+          </button>
+        </div>
+        <div class="modal-content">
+          <form>
+            <div class="form-group">
+              <label for="series-name" class="form-label">Series Name *</label>
+              <input
+                type="text"
+                id="series-name"
+                class="form-input"
+                placeholder="Enter series name..."
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="series-image" class="form-label"
+                >Image URL (optional)</label
+              >
+              <input
+                type="url"
+                id="series-image"
+                class="form-input"
+                placeholder="https://example.com/image.jpg"
+              />
+              <small style="color: #666; font-size: 12px">
+                ℹ️ Must be a valid HTTP/HTTPS URL
+              </small>
+            </div>
+
+            <div style="display: flex; gap: 10px; justify-content: flex-end">
+              <button
+                type="button"
+                class="btn"
+                onclick="hideModal('series-modal')"
+              >
+                Cancel
+              </button>
+              <button type="submit" class="btn btn-primary">
+                Create Series
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Season Modal -->
+    <div id="season-modal" class="modal-overlay" style="display: none">
+      <div class="modal">
+        <div class="modal-header">
+          <h2 class="modal-title">Add Season</h2>
+          <button class="close-btn" onclick="hideModal('season-modal')">
+            ✕
+          </button>
+        </div>
+        <div class="modal-content">
+          <form>
+            <div class="form-group">
+              <label for="season-name" class="form-label">Season Name *</label>
+              <input
+                type="text"
+                id="season-name"
+                class="form-input"
+                placeholder="e.g., Season 1"
+                required
+              />
+            </div>
+
+            <div style="display: flex; gap: 10px; justify-content: flex-end">
+              <button
+                type="button"
+                class="btn"
+                onclick="hideModal('season-modal')"
+              >
+                Cancel
+              </button>
+              <button type="submit" class="btn btn-primary">Add Season</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Episode Modal -->
+    <div id="episode-modal" class="modal-overlay" style="display: none">
+      <div class="modal">
+        <div class="modal-header">
+          <h2 class="modal-title">Add Episode</h2>
+          <button class="close-btn" onclick="hideModal('episode-modal')">
+            ✕
+          </button>
+        </div>
+        <div class="modal-content">
+          <form>
+            <div class="form-group">
+              <label for="episode-name" class="form-label"
+                >Episode Name *</label
+              >
+              <input
+                type="text"
+                id="episode-name"
+                class="form-input"
+                placeholder="e.g., Pilot"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="episode-image" class="form-label"
+                >Image URL (optional)</label
+              >
+              <input
+                type="url"
+                id="episode-image"
+                class="form-input"
+                placeholder="https://example.com/image.jpg"
+              />
+            </div>
+
+            <div style="display: flex; gap: 10px; justify-content: flex-end">
+              <button
+                type="button"
+                class="btn"
+                onclick="hideModal('episode-modal')"
+              >
+                Cancel
+              </button>
+              <button type="submit" class="btn btn-primary">Add Episode</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-bottom">
+          <p>&copy; 2025 CineForum. Wireframe Examples.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      function showModal(id) {
+        document.getElementById(id).style.display = "flex";
+      }
+
+      function hideModal(id) {
+        document.getElementById(id).style.display = "none";
+      }
+
+      // Close modal when clicking outside
+      document.querySelectorAll(".modal-overlay").forEach((overlay) => {
+        overlay.addEventListener("click", function (e) {
+          if (e.target === this) {
+            this.style.display = "none";
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
