@@ -205,7 +205,7 @@ Sistema suteikia RESTful API su šiais endpoint'ais:
 **Backend:**
 - Next.js API Routes
 - Supabase (duomenų bazė ir autentifikacija)
-- PostgreSQL su Row Level Security
+- PostgreSQL
 
 **UI/UX:**
 - Responsive grid sistema
