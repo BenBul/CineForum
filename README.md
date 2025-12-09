@@ -214,3 +214,6 @@ Sistema suteikia RESTful API su šiais endpoint'ais:
 - Font Awesome ikonos
 - Google Fonts (Poppins, Roboto)
 - Violetinių/rožinių spalvų gradient dizainas
+
+Žemiau pateikta sistemos diegimo diagrama. Sistema bus patalpinta Oracle Cloud serveryje. Aplikacija pasiekiama per HTTPS protokolą.
+<img width="823" height="396" alt="image" src="https://github.com/user-attachments/assets/a8dc2578-267d-4649-b64d-c8612f042d31" />
